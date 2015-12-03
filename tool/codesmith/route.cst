@@ -1,0 +1,48 @@
+﻿<%-- 
+Name:DAL
+Author:崔大鹏
+Description: 生成批量更新DAL
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" Debug="False" Description="生成Model类." ResponseEncoding="utf-8"%>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Register Name="Extern" Template="StringProcess.cst"  %>
+<%@ Map Name="CSharpAlias" Src="System-CSharpAlias" Description="" %>
+<%@ Property Name="Creator" Type="System.String" Default="ap" Category="Style" Description="The creator name of the procedure" %>
+
+<%
+    string _dbName=StringUtil.ToPascalCase(Creator);
+    
+    string _sourceTableName=Creator;
+%>
+package <%=_sourceTableName%>
+import (
+	"server/api/router"
+	"server/api/v1/local"
+)
+
+type <%=_sourceTableName%>Router struct {
+	routes []router.Route
+}
+
+func NewRouter() router.Router {
+	r := &<%=_sourceTableName%>Router{}
+	r.initRoutes()
+	return r
+}
+
+func (r *<%=_sourceTableName%>Router) Routes() []router.Route {
+	return r.routes
+}
+
+func (r *<%=_sourceTableName%>Router) initRoutes() {
+	r.routes = []router.Route{
+		local.NewGetRoute("/api/v1/<%=_sourceTableName%>/list", r.Get<%=_dbName%>sPage),
+		local.NewGetRoute("/api/v1/<%=_sourceTableName%>/{id:.*}", r.Get<%=_dbName%>ById),
+		local.NewGetRoute("/api/v1/<%=_sourceTableName%>/add", r.Insert<%=_dbName%>),
+		local.NewGetRoute("/api/v1/<%=_sourceTableName%>/del", r.Remove<%=_dbName%>ById),
+		local.NewGetRoute("/api/v1/<%=_sourceTableName%>/updatebyid", r.Update<%=_dbName%>ById),
+	}
+}

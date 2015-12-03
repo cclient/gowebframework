@@ -1,0 +1,42 @@
+﻿<%-- 
+Name:DAL
+Author:崔大鹏
+Description: 生成mongo go 操作
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" Debug="False" Description="生成Model类." ResponseEncoding="utf-8"%>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Register Name="Extern" Template="StringProcess.cst"  %>
+<%@ Map Name="CSharpAlias" Src="System-CSharpAlias" Description="" %>
+<%@ Property Name="Creator" Type="System.String" Default="ap" Category="Style" Description="The creator name of the procedure" %>
+
+<%
+    string _dbName=StringUtil.ToPascalCase(Creator);
+    string _errName=_dbName.ToUpper();
+    
+    string _sourceTableName=Creator;
+%>
+package manager
+
+import (
+	"errcode"
+	"net/http"
+)
+
+const errGroup = "<%=_sourceTableName%>"
+var (
+	ErrorCodeInvalid<%=_dbName%>Id = errcode.Register(errGroup, 20001, errcode.ErrorDescriptor{
+		Value:          "INVALIDACCOUNT",
+		Message:        "<%=_sourceTableName%> id  is invalid ",
+		Description:    "<%=_sourceTableName%> is  null",
+		HTTPStatusCode: http.StatusBadRequest,
+	})
+	ErrorCodeIdGetNULL = errcode.Register(errGroup, 20002, errcode.ErrorDescriptor{
+		Value:          "NOACCOUNT",
+		Message:        "not has <%=_sourceTableName%> where id is '%s'",
+		Description:    "",
+		HTTPStatusCode: http.StatusBadRequest,
+	})
+)

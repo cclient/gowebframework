@@ -1,0 +1,40 @@
+﻿<%-- 
+Name:DAL
+Author:崔大鹏
+Description: 生成批量更新DAL
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" Debug="False" Description="生成Model类." ResponseEncoding="utf-8"%>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Register Name="Extern" Template="StringProcess.cst"  %>
+<%@ Map Name="CSharpAlias" Src="System-CSharpAlias" Description="" %>
+<%@ Property Name="Creator" Type="System.String" Default="ap" Category="Style" Description="The creator name of the procedure" %>
+
+<%
+    string _dbName=StringUtil.ToPascalCase(Creator);
+    
+    string _sourceTableName=Creator;
+%>
+package manager
+import (
+	"server/common/tool"
+)
+
+
+func Get<%=_dbName%>sPage(meta tool.Meta, query interface{}) (*tool.ResponsePage, error) {
+	session, _, collection, err := tool.GetCollection(nil, DBNAME, COLLECTIONNAME)
+	if err != nil {
+		return nil, err
+	}
+	defer session.Close()
+	if meta.Total == 0 {
+		count, _ := collection.Find(query).Count()
+		meta.Total = count
+	}
+	result, err := Get<%=_dbName%>s(query, meta.Offset, meta.Limit)
+	meta.Length = len(result)
+	meta.SetRemaining()
+	return &tool.ResponsePage{Meta: meta, List: result}, err
+}

@@ -1,0 +1,153 @@
+﻿<%-- 
+Name:DAL
+Author:崔大鹏
+Description: 生成mongo go 操作
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" Debug="False" Description="生成Model类." ResponseEncoding="utf-8"%>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Register Name="Extern" Template="StringProcess.cst"  %>
+<%@ Map Name="CSharpAlias" Src="System-CSharpAlias" Description="" %>
+<%@ Property Name="Creator" Type="System.String" Default="ap" Category="Style" Description="The creator name of the procedure" %>
+
+<%
+    string _dbName=StringUtil.ToPascalCase(Creator);
+    
+    string _sourceTableName=Creator;
+%>
+package manager
+
+import (
+	<%=_sourceTableName%>model "server/api/v1/<%=_sourceTableName%>/model"
+	"server/common/tool"
+	"server/errors"
+)
+
+var COLLECTIONNAME = "<%=_sourceTableName%>"
+var DBNAME = "shenji"
+
+func Insert<%=_dbName%>(<%=_sourceTableName%> <%=_sourceTableName%>model.<%=_dbName%>) error {
+	//TODO 以后写个连接池
+	session, _, collection, err := tool.GetCollection(nil, DBNAME, COLLECTIONNAME)
+	if err != nil {
+		return errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	defer session.Close()
+	err = collection.Insert(&<%=_sourceTableName%>)
+	return nil
+}
+
+func Get<%=_dbName%>ById(id string) (<%=_sourceTableName%> *<%=_sourceTableName%>model.<%=_dbName%>, err error) {
+	return Get<%=_dbName%>ByMgoId(id, true)
+}
+
+func Get<%=_dbName%>ByMgoId(id interface{}, ismgoid bool) (*<%=_sourceTableName%>model.<%=_dbName%>, error) {
+	id, err := tool.GetTrueQueryId(id, ismgoid)
+	if err != nil {
+		return nil, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	session, _, collection, err := tool.GetCollection(nil, DBNAME, COLLECTIONNAME)
+	if err != nil {
+		return nil, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	<%=_sourceTableName%> := new(<%=_sourceTableName%>model.<%=_dbName%>)
+	defer session.Close()
+	err = collection.FindId(id).One(<%=_sourceTableName%>)
+	if err != nil {
+		return nil, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	return <%=_sourceTableName%>, nil
+}
+
+func Get<%=_dbName%>(query interface{}) (*<%=_sourceTableName%>model.<%=_dbName%>, error) {
+	session, _, collection, err := tool.GetCollection(nil, DBNAME, COLLECTIONNAME)
+	if err != nil {
+		return nil, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	<%=_sourceTableName%> := new(<%=_sourceTableName%>model.<%=_dbName%>)
+	defer session.Close()
+	err = collection.Find(query).One(<%=_sourceTableName%>)
+	if err != nil {
+		return nil, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	return <%=_sourceTableName%>, nil
+}
+
+func Update<%=_dbName%>ById(id string, update interface{}) (bool, error) {
+	return Update<%=_dbName%>ByMgoId(id, true, update)
+}
+
+func Update<%=_dbName%>s(selector interface{}, update interface{}) (int, error) {
+	session, _, collection, err := tool.GetCollection(nil, DBNAME, COLLECTIONNAME)
+	if err != nil {
+		return 0, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	defer session.Close()
+	info, err := collection.UpdateAll(selector, update)
+	if err != nil {
+		return 0, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	return info.Updated, nil
+}
+
+func Update<%=_dbName%>ByMgoId(id interface{}, ismgoid bool, update interface{}) (bool, error) {
+	id, err := tool.GetTrueQueryId(id, ismgoid)
+	if err != nil {
+		return false, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	session, _, collection, err := tool.GetCollection(nil, DBNAME, COLLECTIONNAME)
+	if err != nil {
+		return false, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	defer session.Close()
+	err = collection.UpdateId(id, update)
+	if err != nil {
+		return false, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	return true, nil
+}
+func Remove<%=_dbName%>ById(id string) (bool, error) {
+	return Remove<%=_dbName%>ByMgoId(id, true)
+}
+func Remove<%=_dbName%>s(selector interface{}) (int, error) {
+	session, _, collection, err := tool.GetCollection(nil, DBNAME, COLLECTIONNAME)
+	if err != nil {
+		return 0, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	defer session.Close()
+	info, err := collection.RemoveAll(selector)
+	if err != nil {
+		return 0, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	return info.Removed, err
+}
+
+func Remove<%=_dbName%>ByMgoId(id interface{}, ismgoid bool) (bool, error) {
+	id, err := tool.GetTrueQueryId(id, ismgoid)
+	if err != nil {
+		return false, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	session, _, collection, err := tool.GetCollection(nil, DBNAME, COLLECTIONNAME)
+	if err != nil {
+		return false, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	defer session.Close()
+	err = collection.RemoveId(id)
+	if err != nil {
+		return false, errors.ErrorCodeMongoError.WithArgs(err.Error())
+	}
+	return true, nil
+}
+
+func Get<%=_dbName%>s(query interface{}, skip int, limit int) (<%=_sourceTableName%>s []<%=_sourceTableName%>model.<%=_dbName%>, err error) {
+	session, _, collection, err := tool.GetCollection(nil, DBNAME, COLLECTIONNAME)
+	if err != nil {
+		return nil, err
+	}
+	defer session.Close()
+	mquery := tool.MgoQuerySkipLimit(collection.Find(query), skip, limit)
+	err = mquery.Iter().All(&<%=_sourceTableName%>s)
+	return
+}

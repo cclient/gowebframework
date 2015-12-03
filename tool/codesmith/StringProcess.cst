@@ -1,0 +1,33 @@
+﻿
+<script runat="template">
+public class StringProcess{
+    /// <summary>
+    /// 去掉列名最后的"id"字符串，返回PascalCase命名字符串
+    /// </summary>
+    /// <param name="columnName">末尾含id字符串的外键列名</param>
+    /// <returns></returns>
+    public static string RemoveStr_Id(string columnName){
+        if(columnName.ToLower().EndsWith("id")){
+            string colName=columnName.Remove(columnName.Length-2);
+            return StringUtil.ToPascalCase(colName);
+        }
+        return StringUtil.ToPascalCase(columnName);
+    }
+    /// <summary>
+    /// 移除表名中的"s"，或者将"ies"变成"y"，返回PascalCase命名字符串
+    /// </summary>
+    /// <param name="tableName">表名</param>
+    /// <returns></returns>
+    public static string GetClassName(string tableName){
+        if(tableName.Length==0) return tableName;
+        if(tableName.Substring(tableName.Length-3)=="ies"){
+            tableName=tableName.Remove(tableName.Length-3)+"y";
+            return StringUtil.ToPascalCase(tableName);
+        }
+        if(tableName[tableName.Length-1]=='s'){
+            tableName=tableName.Remove(tableName.Length-1);
+        }        
+        return StringUtil.ToPascalCase(tableName);
+    }
+}
+</script>

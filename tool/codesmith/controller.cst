@@ -1,0 +1,68 @@
+﻿<%-- 
+Name:DAL
+Author:崔大鹏
+Description: 生成批量更新DAL
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" Debug="False" Description="生成Model类." ResponseEncoding="utf-8"%>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Register Name="Extern" Template="StringProcess.cst"  %>
+<%@ Map Name="CSharpAlias" Src="System-CSharpAlias" Description="" %>
+<%@ Property Name="Creator" Type="System.String" Default="ap" Category="Style" Description="The creator name of the procedure" %>
+
+<%
+    string _dbName=StringUtil.ToPascalCase(Creator);
+    
+    string _sourceTableName=Creator;
+%>
+package <%=_sourceTableName%>
+import (
+	"golang.org/x/net/context"
+	"net/http"
+	"server/common/httputils"
+	<%=_sourceTableName%>manager "server/api/v1/<%=_sourceTableName%>/manager"
+	<%=_sourceTableName%>model "server/api/v1/<%=_sourceTableName%>/model"
+	
+)
+
+func (s *<%=_sourceTableName%>Router) Get<%=_dbName%>ById(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+	<%=_sourceTableName%>id := vars["id"]
+	if <%=_sourceTableName%>id == "" {
+		return httputils.WriteError(w, <%=_sourceTableName%>manager.ErrorCodeInvalid<%=_dbName%>Id)
+	}
+	res, err := <%=_sourceTableName%>manager.Get<%=_dbName%>ById(<%=_sourceTableName%>id)
+	if res != nil {
+		return httputils.WriteJSON(w, http.StatusOK, res)
+	} else if err == nil {
+		return httputils.WriteError(w, <%=_sourceTableName%>manager.ErrorCodeIdGetNULL.WithArgs(<%=_sourceTableName%>id))
+	} else {
+		return httputils.WriteError(w, err)
+	}
+}
+
+func (s *<%=_sourceTableName%>Router) Get<%=_dbName%>sPage(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+	httputils.ParseForm(r)
+	meta := httputils.GetPagination(r)
+	res, _ := <%=_sourceTableName%>manager.Get<%=_dbName%>sPage(meta, nil)
+	return httputils.WriteJSON(w, http.StatusOK, res)
+}
+
+func (s *<%=_sourceTableName%>Router) Insert<%=_dbName%>(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+	//todo 根据传入表单处理
+	err := <%=_sourceTableName%>manager.Insert<%=_dbName%>(<%=_sourceTableName%>model.<%=_dbName%>{})
+	return httputils.WriteJSON(w, http.StatusOK, err)
+}
+
+func (s *<%=_sourceTableName%>Router) Update<%=_dbName%>ById(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+	res, _ := <%=_sourceTableName%>manager.Update<%=_dbName%>ById("",nil)
+	return httputils.WriteJSON(w, http.StatusOK, res)
+}
+
+func (s *<%=_sourceTableName%>Router) Remove<%=_dbName%>ById(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+	res, _ := <%=_sourceTableName%>manager.Remove<%=_dbName%>ById("")
+	return httputils.WriteJSON(w, http.StatusOK, res)
+}
+
+   

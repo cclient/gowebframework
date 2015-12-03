@@ -1,0 +1,91 @@
+﻿<%-- 
+Name:DAL
+Author:崔大鹏
+Description: 生成批量更新DAL
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" Debug="False" Description="生成DAL类." ResponseEncoding="utf-8"%>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="mscorlib" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Text"%>
+<%@ Map Name="CSharpAlias" Src="System-CSharpAlias" Description="" %>
+<%@ Register Name="Extern" Template="StringProcess.cst" %>
+
+
+
+
+<% 
+   OutputSubTemplate(); 
+%>
+<script runat="template"> 
+private CodeTemplate _mySubTemplate; 
+
+public void OutputSubTemplate() 
+{ 
+    string[] collections={
+        "ap_heart"
+        ,"auditorigdata"
+        ,"auditorigdatawarn"
+        ,"auditorigdata_username"
+        ,"auditlog"
+        ,"client_mac"
+        ,"onlineoffline"
+        
+        ,"people"
+        ,"notelmac"
+        ,"peoplemulitmac"
+        
+        ,"account"
+        ,"analysistime"
+        ,"ap"
+        ,"everydayapstatus"
+        ,"everydayauditclientmac"
+        ,"everydayroleapstatus"
+        ,"onlineap"
+        ,"shop"
+        ,"warnlog"
+        ,"warnpeople"
+        ,"operalog"
+        ,"everytenminvisit"
+        ,"everytopshop"
+        };
+    
+    string[] temps={"base","controller","error","page","page_test","route"};
+    
+    foreach(var table in collections){
+          foreach(var tempname in temps){
+         CodeTemplateCompiler compiler = new CodeTemplateCompiler(this.CodeTemplateInfo.DirectoryName +"\\"+tempname +".cst"); 
+        //CodeTemplateCompiler compiler = new CodeTemplateCompiler(tempname +".cst");  
+        compiler.Compile(); 
+         
+         if (compiler.Errors.Count == 0) 
+         { 
+            _mySubTemplate = compiler.CreateInstance(); 
+         } 
+         else 
+         { 
+            for (int i = 0; i < compiler.Errors.Count; i++) 
+            {
+               Response.WriteLine(compiler.Errors[ i].ToString()); 
+            } 
+         }
+           _mySubTemplate.SetProperty("Creator", table); 
+   _mySubTemplate.SetProperty("IncludeDrop", false); 
+   _mySubTemplate.SetProperty("InsertPrefix", "Insert"); 
+         //打印到界面
+//MySubTemplate.Render(Response); 
+         string path="C:\\mongogo\\"+table+"\\"+tempname+".txt";
+    //     _mySubTemplate.Render(Response); 
+    
+   _mySubTemplate.RenderToFile(path,true);
+         
+         
+    }
+        
+    }
+  
+ 
+} 
+</script>       

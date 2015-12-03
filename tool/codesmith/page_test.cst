@@ -1,0 +1,71 @@
+﻿<%-- 
+Name:DAL
+Author:崔大鹏
+Description: 生成批量更新DAL
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" Debug="False" Description="生成Model类." ResponseEncoding="utf-8"%>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Register Name="Extern" Template="StringProcess.cst"  %>
+<%@ Map Name="CSharpAlias" Src="System-CSharpAlias" Description="" %>
+<%@ Property Name="Creator" Type="System.String" Default="ap" Category="Style" Description="The creator name of the procedure" %>
+
+<%
+    string _dbName=StringUtil.ToPascalCase(Creator);
+    
+    string _sourceTableName=Creator;
+%>
+package manager
+import (
+	"api"
+	"fmt"
+	"testing"
+	"gopkg.in/mgo.v2/bson"
+)
+
+//
+func Test_Get<%=_dbName%>ById(t *testing.T) {
+	res, err := Get<%=_dbName%>ById("560b901a793513340237cad9")
+	fmt.Println(res)
+	fmt.Println(err)
+}
+
+func Test_Get<%=_dbName%>s(t *testing.T) {
+	res, err := Get<%=_dbName%>s(nil, 0, 0)
+	fmt.Println(res[0])
+	fmt.Println(len(res))
+	fmt.Println(err)
+}
+
+func Test_Get<%=_dbName%>sPage(t *testing.T) {
+	res, err := Get<%=_dbName%>sPage(api.Meta{Limit: 100}, nil)
+	fmt.Println(res)
+	fmt.Println(err)
+}
+func Test_Update<%=_dbName%>ById(t *testing.T) {
+	//修改
+	//	res, err := Update<%=_dbName%>ById("560b901a793513340237cad9",bson.D{{"$set",bson.D{bson.DocElem{"userSource", 1}}}})
+	//	res, err := Update<%=_dbName%>ById("560b901a793513340237cad9", bson.D{{"$set", bson.M{"help2": false}}})
+
+	//覆盖
+	res, err := Update<%=_dbName%>ById("560b901a793513340237cad9", bson.D{bson.DocElem{"userSource3", 1}})
+	//	res, err := Update<%=_dbName%>ById("560b901a793513340237cad9", &api.Meta{Offset: 3})
+	fmt.Println(res)
+	fmt.Println(err)
+}
+
+//func Test_Insert<%=_dbName%>(t *testing.T) {
+//	Insert<%=_dbName%>(<%=_dbName%>{Isadmin: true,Truename:"hello word"})
+//}
+
+func Test_Insert<%=_dbName%>(t *testing.T) {
+//	<%=_sourceTableName%>, _ := Get<%=_dbName%>ById("55d54ac5c4456f8430c980a4")
+//	<%=_sourceTableName%>, _ := Get<%=_dbName%>ById("55f11f9aa3536ec031541583")
+	<%=_sourceTableName%>, _ := Get<%=_dbName%>ById("55fbe2aa0f73146d41b59a0c")
+	
+	get<%=_dbName%>ManageShop(<%=_sourceTableName%>)
+}
+
+   
