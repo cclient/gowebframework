@@ -28,6 +28,7 @@ webapi应用层的开发，难度为0，甚至可以完全不用涉及到go的�
 tool/code.js 用来解析json数据格式为go的struct。
 
 tool/mongocollection_go_opera_make.cst 根据"mongodb 表名"生成curl+分页的go代码,实现也有很多优化余地。
+其他复杂的操作，实现在manager目录下。route-controller-manager/dao
 
 tool/autobuild.js 用nodej和glub-watcher写的监听go 项目自动编译，很鸡肋,go太重了，改一小个部分，就编译的话，多数是编译失败,而且很消耗性能，还没想到完美的优化办法,暂时用个定时器 监听2秒，停止1秒，如此循环，会减少些 “无效”的编译,不过这又有了新的问题。这样又有新的问题。还是不用的好。
 
