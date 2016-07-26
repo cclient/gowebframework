@@ -23,7 +23,6 @@ mongodb的mgo库有缺陷，若实体中数据类型为Int(其他nubmer类型)�
 go各种库的文档很全面
 即使没有文档，从库的test文件可以得到的信息足够满足90%以上的开发需求，还有疑问，可以深入其源码实现，再有疑问google。
 
-webapi应用层的开发，难度为0，甚至可以完全不用涉及到go的特性，如协程，完全是像j2ee,asp.net那样的体力活。
 
 tool/code.js 用来解析json数据格式为go的struct。
 
