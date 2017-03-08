@@ -2,33 +2,23 @@ package api
 
 import (
 	"crypto/tls"
-	"net"
-	"net/http"
-	"os"
-	"strings"
-
-	"server/api/router"
-	"server/api/v1/account"
-	
-	"server/api/v1/local"
-
-	"server/common/httputils"
-
+	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
-	//	"static"
-	//	"sockets"
-	"fmt"
+	"net"
+	"net/http"
+	"os"
+	"server/api/router"
+	"server/api/v1/account"
+	"server/api/v1/local"
+	"server/common/httputils"
 	"server/pkg/libnetwork/portallocator"
-	"strconv"
-	"utils"
-
-	"server/common/tool"
 	"server/pkg/listenbuffer"
+	"strconv"
+	"strings"
 	"time"
-	
-	//	"github.com/gorilla/sessions"
+	"utils"
 )
 
 // versionMatcher defines a variable matcher to be parsed by the router
@@ -44,10 +34,8 @@ type Config struct {
 	SocketGroup string
 	TLSConfig   *tls.Config
 	//	Addrs       []Addr
-
-	Host string
-	Port string
-	//cdpadd
+	Host        string
+	Port        string
 	PubFilePath string
 	Pidfile     string
 }
@@ -73,7 +61,6 @@ func New(cfg *Config) (*Server, error) {
 		cfg:   cfg,
 		start: make(chan struct{}),
 	}
-	//	fmt.Println("hello")
 	//	for _, addr := range cfg.Addrs {
 	//		//		srv, err := s.newServer(addr.Proto, addr.Addr)
 	//		srv, err := s.newServer("tcp", "0.0.0.0:9900")
@@ -83,8 +70,6 @@ func New(cfg *Config) (*Server, error) {
 	//		logrus.Debugf("Server created for HTTP on %s (%s)", addr.Proto, addr.Addr)
 	//		s.servers = append(s.servers, srv...)
 	//	}
-	//
-	//
 	//	srv, err := s.newServer("tcp", "0.0.0.0:8990")
 	srv, err := s.newServer("tcp", s.cfg.Host+":"+s.cfg.Port)
 	if err != nil {
@@ -119,14 +104,12 @@ func (s *Server) ServeAPI() error {
 			chErrors <- err
 		}(srv)
 	}
-
 	for i := 0; i < len(s.servers); i++ {
 		err := <-chErrors
 		if err != nil {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -163,7 +146,6 @@ func (s *Server) initTCPSocket(addr string) (l net.Listener, err error) {
 	//	if l, err = NewTCPSocket(addr, s.cfg.TLSConfig, s.start); err != nil {
 	//		return nil, err
 	//	}
-
 	if l, err = NewTCPSocketNoTls(addr, s.start); err != nil {
 		return nil, err
 	}
@@ -178,7 +160,6 @@ func (s *Server) makeHTTPHandler(handler httputils.APIFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// log the handler call
 		logrus.Debugf("Calling %s %s", r.Method, r.URL.Path)
-
 		// Define the context that we'll pass around to share info
 		// like the docker-request-id.
 		//
@@ -203,33 +184,16 @@ func (s *Server) makeHTTPHandler(handler httputils.APIFunc) http.HandlerFunc {
 
 // InitRouters initializes a list of routers for the server.
 // Sets those routers as Handler for each server.
-//func (s *Server) InitRouters(d *daemon.Daemon) {
-//	s.addRouter(local.NewRouter(d))
-//	s.addRouter(network.NewRouter(d))
-//	for _, srv := range s.servers {
-//		srv.srv.Handler = s.CreateMux()
-//	}
-//}
-
 func (s *Server) InitRouters() {
 	s.addRouter(local.NewRouter())
 	s.addRouter(account.NewRouter())
 	for _, srv := range s.servers {
-		//fileHandler只能从根开始
-		fmt.Println("path")
-		fmt.Println(tool.GetCurrPath())
 		newmux := http.NewServeMux()
-		//						filemux := http.FileServer(http.Dir("../src/public"))
-		//				filemux := http.FileServer(http.Dir("/Users/cdpmac/Documents/workspace/c/audit/src/public"))
 		filemux := http.FileServer(http.Dir(s.cfg.PubFilePath))
 		apimux := s.CreateMux()
 		newmux.Handle("/", filemux)
 		newmux.Handle("/api/", apimux)
 		srv.srv.Handler = newmux
-		//		fmt.Println(srv)
-		//		fileHandler := http.FileServer(http.Dir("/Users/cdpmac/Documents/workspace/c/audit/src/public"))
-		//		http.Handle("/", fileHandler)
-		//		http.Handle("/html/", s.CreateMux())
 	}
 }
 
@@ -242,26 +206,12 @@ func (s *Server) addRouter(r router.Router) {
 // we keep enableCors just for legacy usage, need to be removed in the future
 func (s *Server) CreateMux() *mux.Router {
 	m := mux.NewRouter()
-	//	m.PathPrefix("/html/")
-
-	//	fileHandler := http.FileServer(http.Dir("/Users/cdpmac/Documents/workspace/c/audit/src/static"))
-	////	//	h := static.CreateHandler(".")
-	//	m.Handle("/static", fileHandler)
-	//	m.Path("/static").Methods("GET").Handler(fileHandler)
-
-	//	muxo := http.NewServeMux()
-	//	fileHandler := http.FileServer(http.Dir("/Users/cdpmac/Documents/workspace/c/audit/src/static"))
-	//	muxo.Handle("/", fileHandler)
-	//	m.Handle("/static", muxo)
-
 	if os.Getenv("DEBUG") != "" {
 		profilerSetup(m, "/debug/")
 	}
-
 	fmt.Println("Registering routers")
 	logrus.Debugf("Registering routers")
 	for _, apiRouter := range s.routers {
-
 		for _, r := range apiRouter.Routes() {
 			f := s.makeHTTPHandler(r.Handler())
 			logrus.Debugf("Registering %s, %s", r.Method(), r.Path())
@@ -269,7 +219,6 @@ func (s *Server) CreateMux() *mux.Router {
 			m.Path(r.Path()).Methods(r.Method()).Handler(f)
 		}
 	}
-
 	return m
 }
 
@@ -289,56 +238,31 @@ func (s *Server) AcceptConnections() {
 // newServer sets up the required HTTPServers and does protocol specific checking.
 // newServer does not set any muxers, you should set it later to Handler field
 func (s *Server) newServer(proto, addr string) ([]*HTTPServer, error) {
-	//	fmt.Println("proto")
-	fmt.Println("proto" + proto)
 	var (
-		//		err error
+		//err error
 		ls []net.Listener
 	)
-
-	//	switch proto {
-	////	case "fd":
-	////		ls, err = listenFD(addr)
-	////		if err != nil {
-	////			return nil, err
-	////		}
-	//	case "tcp":
-	//		l, err := s.initTCPSocket(addr)
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//		ls = append(ls, l)
-	////	case "unix":
-	//////		l, err := sockets.NewUnixSocket(addr, s.cfg.SocketGroup, s.start)
-	////		l, err := NewUnixSocket(addr, s.cfg.SocketGroup, s.start)
-	////		if err != nil {
-	////			return nil, err
-	////		}
-	////		ls = append(ls, l)
-	//	default:
-	//		return nil, fmt.Errorf("Invalid protocol format: %q", proto)
-	//	}
-
-	l, err := s.initTCPSocket(addr)
-	if err != nil {
-		return nil, err
+	switch proto {
+	case "tcp":
+		l, err := s.initTCPSocket(addr)
+		if err != nil {
+			return nil, err
+		}
+		ls = append(ls, l)
+	default:
+		return nil, fmt.Errorf("Invalid protocol format: %q", proto)
 	}
-	ls = append(ls, l)
+
 	var res []*HTTPServer
 	for _, l := range ls {
-
-		//http.NewServeMux()
 		httpsrv := &http.Server{
 			Addr: addr,
 		}
-
-		//		httpsrv.Serve(l)
 		res = append(res, &HTTPServer{
 			httpsrv,
 			l,
 		})
 	}
-	//		fmt.Println("")
 	return res, nil
 }
 
@@ -393,19 +317,16 @@ func NewTCPSocketNoTls(addr string, activate <-chan struct{}) (net.Listener, err
 	if err != nil {
 		return nil, err
 	}
-
 	//	if tlsConfig != nil {
 	//		tlsConfig.NextProtos = []string{"http/1.1"}
 	//		l = tls.NewListener(l, tlsConfig)
 	//	}
-
 	//	ln, err := Listen("tcp", "127.0.0.1:0")
 	//	if err != nil {
 	//		if ln, err = Listen("tcp6", "[::1]:0"); err != nil {
 	//			t.Fatalf("ListenTCP on :0: %v", err)
 	//		}
 	//	}
-
 	return l, nil
 }
 

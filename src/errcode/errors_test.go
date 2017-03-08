@@ -13,14 +13,9 @@ func TestErrorCodes(t *testing.T) {
 	if len(errorCodeToDescriptors) == 0 {
 		t.Fatal("errors aren't loaded!")
 	}
-
 	for ec, desc := range errorCodeToDescriptors {
 		if ec != desc.Code {
 			t.Fatalf("error code in descriptor isn't correct, %q != %q", ec, desc.Code)
-		}
-
-		if idToDescriptors[desc.Value].Code != ec {
-			t.Fatalf("error code in idToDesc isn't correct, %q != %q", idToDescriptors[desc.Value].Code, ec)
 		}
 
 		if ec.Message() != desc.Message {
@@ -62,21 +57,21 @@ func TestErrorCodes(t *testing.T) {
 
 // TestErrorsManagement does a quick check of the Errors type to ensure that
 // members are properly pushed and marshaled.
-var ErrorCodeTest1 = Register("v2.errors", ErrorDescriptor{
+var ErrorCodeTest1 = Register("v2.errors", 1, ErrorDescriptor{
 	Value:          "TEST1",
 	Message:        "test error 1",
 	Description:    `Just a test message #1.`,
 	HTTPStatusCode: http.StatusInternalServerError,
 })
 
-var ErrorCodeTest2 = Register("v2.errors", ErrorDescriptor{
+var ErrorCodeTest2 = Register("v2.errors", 2, ErrorDescriptor{
 	Value:          "TEST2",
 	Message:        "test error 2",
 	Description:    `Just a test message #2.`,
 	HTTPStatusCode: http.StatusNotFound,
 })
 
-var ErrorCodeTest3 = Register("v2.errors", ErrorDescriptor{
+var ErrorCodeTest3 = Register("v2.errors", 3, ErrorDescriptor{
 	Value:          "TEST3",
 	Message:        "Sorry %q isn't valid",
 	Description:    `Just a test message #3.`,

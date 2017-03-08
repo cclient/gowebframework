@@ -7,10 +7,9 @@ import (
 )
 
 var COLLECTIONNAME = "account"
-var DBNAME = "shenji"
+var DBNAME = "audit"
 
 func InsertAccount(account model.Account) error {
-	//TODO 以后写个连接池
 	session, _, collection, err := tool.GetCollection(nil, DBNAME, COLLECTIONNAME)
 	if err != nil {
 		return errors.ErrorCodeMongoError.WithArgs(err.Error())
@@ -22,6 +21,11 @@ func InsertAccount(account model.Account) error {
 
 func GetAccountById(id string) (account *model.Account, err error) {
 	return GetAccountByMgoId(id, true)
+}
+
+func GetAccountTest() (account *model.Account, err error) {
+	account = new(model.Account)
+	return account, nil
 }
 
 func GetAccount(query interface{}) (account *model.Account, err error) {

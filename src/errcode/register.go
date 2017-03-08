@@ -2,7 +2,6 @@ package errcode
 
 import (
 	"fmt"
-//	"net/http"
 	"sort"
 	"sync"
 )

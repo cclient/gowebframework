@@ -10,8 +10,8 @@ import (
 	"syscall"
 
 	"github.com/Sirupsen/logrus"
-	"server/pkg/listenbuffer"
 	"github.com/opencontainers/runc/libcontainer/user"
+	"server/pkg/listenbuffer"
 )
 
 // NewUnixSocket creates a unix socket with the specified path and group.

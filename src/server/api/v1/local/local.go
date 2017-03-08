@@ -1,11 +1,10 @@
 package local
 
 import (
-	"net/http"
 	"golang.org/x/net/context"
-	"server/common/httputils"
+	"net/http"
 	dkrouter "server/api/router"
-	
+	"server/common/httputils"
 )
 
 // router is a docker router that talks with the local docker daemon.
@@ -74,7 +73,7 @@ func NewHeadRoute(path string, handler httputils.APIFunc) dkrouter.Route {
 // NewRouter initializes a local router with a new daemon.
 func NewRouter() dkrouter.Router {
 	r := &router{
-//		daemon: daemon,
+	//		daemon: daemon,
 	}
 	r.initRoutes()
 	return r
@@ -88,63 +87,63 @@ func (r *router) Routes() []dkrouter.Route {
 // initRoutes initializes the routes in this router
 func (r *router) initRoutes() {
 	r.routes = []dkrouter.Route{
-		// HEAD
-//		NewHeadRoute("/containers/{name:.*}/archive", r.headContainersArchive),
-//		// OPTIONS
-//		NewOptionsRoute("/", optionsHandler),
-//		// GET
-//		NewGetRoute("/_ping", pingHandler),
-//		NewGetRoute("/events", r.getEvents),
-//		NewGetRoute("/info", r.getInfo),
-//		NewGetRoute("/version", r.getVersion),
-//		NewGetRoute("/images/json", r.getImagesJSON),
-//		NewGetRoute("/images/search", r.getImagesSearch),
-//		NewGetRoute("/images/get", r.getImagesGet),
-//		NewGetRoute("/images/{name:.*}/get", r.getImagesGet),
-//		NewGetRoute("/images/{name:.*}/history", r.getImagesHistory),
-//		NewGetRoute("/images/{name:.*}/json", r.getImagesByName),
-//		NewGetRoute("/containers/json", r.getContainersJSON),
-//		NewGetRoute("/containers/{name:.*}/export", r.getContainersExport),
-//		NewGetRoute("/containers/{name:.*}/changes", r.getContainersChanges),
-//		NewGetRoute("/containers/{name:.*}/json", r.getContainersByName),
-//		NewGetRoute("/containers/{name:.*}/top", r.getContainersTop),
-//		NewGetRoute("/containers/{name:.*}/logs", r.getContainersLogs),
-//		NewGetRoute("/containers/{name:.*}/stats", r.getContainersStats),
-//		NewGetRoute("/containers/{name:.*}/attach/ws", r.wsContainersAttach),
-//		NewGetRoute("/exec/{id:.*}/json", r.getExecByID),
-//		NewGetRoute("/containers/{name:.*}/archive", r.getContainersArchive),
-//		NewGetRoute("/volumes", r.getVolumesList),
-//		NewGetRoute("/volumes/{name:.*}", r.getVolumeByName),
-//		// POST
-//		NewPostRoute("/auth", r.postAuth),
-//		NewPostRoute("/commit", r.postCommit),
-//		NewPostRoute("/build", r.postBuild),
-//		NewPostRoute("/images/create", r.postImagesCreate),
-//		NewPostRoute("/images/load", r.postImagesLoad),
-//		NewPostRoute("/images/{name:.*}/push", r.postImagesPush),
-//		NewPostRoute("/images/{name:.*}/tag", r.postImagesTag),
-//		NewPostRoute("/containers/create", r.postContainersCreate),
-//		NewPostRoute("/containers/{name:.*}/kill", r.postContainersKill),
-//		NewPostRoute("/containers/{name:.*}/pause", r.postContainersPause),
-//		NewPostRoute("/containers/{name:.*}/unpause", r.postContainersUnpause),
-//		NewPostRoute("/containers/{name:.*}/restart", r.postContainersRestart),
-//		NewPostRoute("/containers/{name:.*}/start", r.postContainersStart),
-//		NewPostRoute("/containers/{name:.*}/stop", r.postContainersStop),
-//		NewPostRoute("/containers/{name:.*}/wait", r.postContainersWait),
-//		NewPostRoute("/containers/{name:.*}/resize", r.postContainersResize),
-//		NewPostRoute("/containers/{name:.*}/attach", r.postContainersAttach),
-//		NewPostRoute("/containers/{name:.*}/copy", r.postContainersCopy),
-//		NewPostRoute("/containers/{name:.*}/exec", r.postContainerExecCreate),
-//		NewPostRoute("/exec/{name:.*}/start", r.postContainerExecStart),
-//		NewPostRoute("/exec/{name:.*}/resize", r.postContainerExecResize),
-//		NewPostRoute("/containers/{name:.*}/rename", r.postContainerRename),
-//		NewPostRoute("/volumes", r.postVolumesCreate),
-//		// PUT
-//		NewPutRoute("/containers/{name:.*}/archive", r.putContainersArchive),
-//		// DELETE
-//		NewDeleteRoute("/containers/{name:.*}", r.deleteContainers),
-//		NewDeleteRoute("/images/{name:.*}", r.deleteImages),
-//		NewDeleteRoute("/volumes/{name:.*}", r.deleteVolumes),
+	// HEAD
+	//		NewHeadRoute("/containers/{name:.*}/archive", r.headContainersArchive),
+	//		// OPTIONS
+	//		NewOptionsRoute("/", optionsHandler),
+	//		// GET
+	//		NewGetRoute("/_ping", pingHandler),
+	//		NewGetRoute("/events", r.getEvents),
+	//		NewGetRoute("/info", r.getInfo),
+	//		NewGetRoute("/version", r.getVersion),
+	//		NewGetRoute("/images/json", r.getImagesJSON),
+	//		NewGetRoute("/images/search", r.getImagesSearch),
+	//		NewGetRoute("/images/get", r.getImagesGet),
+	//		NewGetRoute("/images/{name:.*}/get", r.getImagesGet),
+	//		NewGetRoute("/images/{name:.*}/history", r.getImagesHistory),
+	//		NewGetRoute("/images/{name:.*}/json", r.getImagesByName),
+	//		NewGetRoute("/containers/json", r.getContainersJSON),
+	//		NewGetRoute("/containers/{name:.*}/export", r.getContainersExport),
+	//		NewGetRoute("/containers/{name:.*}/changes", r.getContainersChanges),
+	//		NewGetRoute("/containers/{name:.*}/json", r.getContainersByName),
+	//		NewGetRoute("/containers/{name:.*}/top", r.getContainersTop),
+	//		NewGetRoute("/containers/{name:.*}/logs", r.getContainersLogs),
+	//		NewGetRoute("/containers/{name:.*}/stats", r.getContainersStats),
+	//		NewGetRoute("/containers/{name:.*}/attach/ws", r.wsContainersAttach),
+	//		NewGetRoute("/exec/{id:.*}/json", r.getExecByID),
+	//		NewGetRoute("/containers/{name:.*}/archive", r.getContainersArchive),
+	//		NewGetRoute("/volumes", r.getVolumesList),
+	//		NewGetRoute("/volumes/{name:.*}", r.getVolumeByName),
+	//		// POST
+	//		NewPostRoute("/auth", r.postAuth),
+	//		NewPostRoute("/commit", r.postCommit),
+	//		NewPostRoute("/build", r.postBuild),
+	//		NewPostRoute("/images/create", r.postImagesCreate),
+	//		NewPostRoute("/images/load", r.postImagesLoad),
+	//		NewPostRoute("/images/{name:.*}/push", r.postImagesPush),
+	//		NewPostRoute("/images/{name:.*}/tag", r.postImagesTag),
+	//		NewPostRoute("/containers/create", r.postContainersCreate),
+	//		NewPostRoute("/containers/{name:.*}/kill", r.postContainersKill),
+	//		NewPostRoute("/containers/{name:.*}/pause", r.postContainersPause),
+	//		NewPostRoute("/containers/{name:.*}/unpause", r.postContainersUnpause),
+	//		NewPostRoute("/containers/{name:.*}/restart", r.postContainersRestart),
+	//		NewPostRoute("/containers/{name:.*}/start", r.postContainersStart),
+	//		NewPostRoute("/containers/{name:.*}/stop", r.postContainersStop),
+	//		NewPostRoute("/containers/{name:.*}/wait", r.postContainersWait),
+	//		NewPostRoute("/containers/{name:.*}/resize", r.postContainersResize),
+	//		NewPostRoute("/containers/{name:.*}/attach", r.postContainersAttach),
+	//		NewPostRoute("/containers/{name:.*}/copy", r.postContainersCopy),
+	//		NewPostRoute("/containers/{name:.*}/exec", r.postContainerExecCreate),
+	//		NewPostRoute("/exec/{name:.*}/start", r.postContainerExecStart),
+	//		NewPostRoute("/exec/{name:.*}/resize", r.postContainerExecResize),
+	//		NewPostRoute("/containers/{name:.*}/rename", r.postContainerRename),
+	//		NewPostRoute("/volumes", r.postVolumesCreate),
+	//		// PUT
+	//		NewPutRoute("/containers/{name:.*}/archive", r.putContainersArchive),
+	//		// DELETE
+	//		NewDeleteRoute("/containers/{name:.*}", r.deleteContainers),
+	//		NewDeleteRoute("/images/{name:.*}", r.deleteImages),
+	//		NewDeleteRoute("/volumes/{name:.*}", r.deleteVolumes),
 	}
 }
 

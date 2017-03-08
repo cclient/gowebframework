@@ -1,11 +1,11 @@
 package tool
 
 import (
+	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"server/errors"
 	"strconv"
-	"fmt"
 )
 
 type KeyMaps []KeyMap
@@ -27,22 +27,16 @@ type RequestMongoKeyMap map[string]interface{}
 
 //todo test
 func GetTimeSection(begintime int64, endtime int64) bson.M {
-	//	fmt.Println(begintime)
-	//	fmt.Println(endtime)
 	if begintime != 0 || endtime != 0 {
 		var bsonarr bson.D
 		if begintime != 0 {
-			//			fmt.Println("add starttime")
 			bsonarr = append(bsonarr, bson.DocElem{"$gt", begintime})
 		}
 		if endtime != 0 {
 			bsonarr = append(bsonarr, bson.DocElem{"$lt", endtime})
 		}
-		//		keymap[key]=bson.M{"$gt": begintime,""}
 		return bsonarr.Map()
-		//		(*keymap)[key] = bsonarr.Map()
 	}
-	//	fmt.Println("time nil")
 	return nil
 }
 
@@ -71,19 +65,13 @@ func (keymap RequestMongoKeyMap) HasKey() bool {
 	return false
 }
 
-//func getMo
 func (keymap RequestMongoKeyMap) ParseRequestToMongoQuery() bson.M {
 	var bsonarr bson.D
 	for key, value := range keymap {
-		//		fmt.Println("key")
-		//		fmt.Println(value)
 		if value != nil && value != "" && value != 0 {
-			//			fmt.Println(key)
-			//			fmt.Println(value)
 			bsonarr = append(bsonarr, bson.DocElem{key, value})
 		}
 	}
-	//	fmt.Println(bsonarr.Map())
 	return bsonarr.Map()
 }
 
@@ -96,7 +84,6 @@ func (keymap RequestMongoKeyMap) ParseUpdateToMongoSet() bson.D {
 	}
 	return bson.D{{"$set", bsonarr}}
 }
-
 
 func CreateMgoId() bson.ObjectId {
 	return bson.NewObjectId()
@@ -147,10 +134,6 @@ func (keymap RequestMongoKeyMap) SetMgoQueryReg(key string, reg string) {
 func (keymap RequestMongoKeyMap) SetOrArray(key string, strarr []string) {
 	keymap.setOpearStringArray(key, "$or", strarr)
 }
-//func (keymap RequestMongoKeyMap) SetOrArray(key string, strarr []string) {
-//	keymap.setOpearStringArray(key, "$or", strarr)
-//}
-
 
 func (keymap RequestMongoKeyMap) SetInStringArray(key string, strarr []string) {
 	keymap.setOpearStringArray(key, "$in", strarr)
@@ -180,15 +163,9 @@ func (keymap RequestMongoKeyMap) setOpearStringArray(key string, opera string, s
 	}
 }
 
-
 func (keymap RequestMongoKeyMap) SetOpear(key string, opera string, value interface{}) {
 	keymap[key] = bson.M{opera: value}
 }
-
-//func (keymap RequestMongoKeyMap) SetOpearDom(opera string, value interface{}) {
-//	
-//
-//}
 
 func (keymap RequestMongoKeyMap) SetTimeSection(key string, begintime int64, endtime int64) {
 	if begintime != 0 || endtime != 0 {
@@ -200,16 +177,11 @@ func (keymap RequestMongoKeyMap) SetTimeSection(key string, begintime int64, end
 			bsonarr = append(bsonarr, bson.DocElem{"$lt", endtime})
 		}
 		keymap[key] = bsonarr.Map()
-		//		return bsonarr.Map()
-
-		//		(*keymap)[key] = bsonarr.Map()
 	}
-	//	fmt.Println("time nil")
-	//	return nil
 }
 
 var Port = "27017"
-var AESKEY=[]byte("goyooxiaoyunaudi")
+var AESKEY = []byte("hello cuidapeng")
 
 func GetCollection(oldsession *mgo.Session, db string, collectionname string) (session *mgo.Session, database *mgo.Database, collection *mgo.Collection, err error) {
 	if oldsession == nil {
@@ -253,7 +225,6 @@ func GetTrueQueryId(id interface{}, ismgoid bool) (interface{}, error) {
 }
 
 func GetMongoCollectionDataCount(dbname string, collectionname string, query interface{}) (int, error) {
-	//TODO 以后写个连接池
 	session, _, collection, err := GetCollection(nil, dbname, collectionname)
 	var count int
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"crypto/sha1"
 	"encoding/hex"
+	"errcode"
 	"fmt"
 	"io"
 	"os"
@@ -11,7 +12,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"errcode"
 )
 
 // SelfPath figures out the absolute path of our own binary (if it's still around).
@@ -50,12 +50,9 @@ func dockerInitSha1(target string) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-
 // DockerInitPath figures out the path of our dockerinit (which may be SelfPath())
 
-
 var globalTestID string
-
 
 // GetCallerName introspects the call stack and returns the name of the
 // function `depth` levels down in the stack.

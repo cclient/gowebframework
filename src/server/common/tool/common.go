@@ -7,9 +7,8 @@ import (
 	//	"path/filepath"
 	//	"sort"
 	//	"strconv"
-	"strings"
-
 	"github.com/Sirupsen/logrus"
+	"strings"
 	//	"server/pkg/system"
 	"github.com/gorilla/sessions"
 	//	"github.com/kidstuff/mongostore"
@@ -18,23 +17,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	//	"server/errors"
-	"server/pkg/version"
 	"strconv"
 	"time"
-	//	accountmodel "server/api/v1/account/model"
-)
-
-// Common constants for daemon and client.
-const (
-	// Version of Current REST API
-	Version version.Version = "1.22"
-
-	// MinVersion represents Minimun REST API version supported
-	MinVersion version.Version = "1.12"
-
-	// DefaultDockerfileName is the Default filename with Docker commands, read by docker build
-	DefaultDockerfileName string = "Dockerfile"
 )
 
 // byPrivatePort is temporary type used to sort types.Port by PrivatePort
@@ -65,64 +49,23 @@ func GetCurrPath() string {
 	return ret
 }
 
-//func getOpearStringArray(opera string, strarr []string) bson.M {
-//	if len(strarr) != 0 {
-//		return bson.M{opera: strarr}
-//	}
-//	return nil
-//}
-//
-
-//func GetPageQueryAndSetMeta(DBNAME string, COLLECTIONNAME string, meta *Meta, query interface{}, gettypeinfo interface{})  {
-//	session, _, collection, err := GetCollection(nil, DBNAME, COLLECTIONNAME)
-//	if err != nil {
-//		return nil, err
-//	}
-//	defer session.Close()
-//	if meta.Total == 0 {
-//		count, _ := collection.Find(query).Count()
-//		meta.Total = count
-//	}
-//	return
-//}
-
-//func GetPageData(collection mgo.Collection,query interface{}, skip int, limit int) (aps []apmodel.Ap, err error) {
-//	session, _, collection, err := tool.GetCollection(nil, DBNAME, COLLECTIONNAME)
-//	if err != nil {
-//		return nil, err
-//	}
-//	defer session.Close()
-//	mquery := tool.MgoQuerySkipLimit(collection.Find(query), skip, limit)
-//	err = mquery.Iter().All(&aps)
-//	return
-//}
-
-//func GetPage(DBNAME string, COLLECTIONNAME string, meta Meta, query interface{}, gettypeinfo interface{}) (*ResponsePage, error) {
-//
-//	var arrcontain []interface{}
-//	switch gettypeinfo.(type) { //多选语句switch
-//
-//	case accountmodel.Account:
-//		arrcontain = []accountmodel.Account{}
-//		//是字符时做的事情
-//	}
-//
-//	//	session, _, collection, err := tool.GetCollection(nil, "shenji", "ap")
-//	session, _, collection, err := GetCollection(nil, DBNAME, COLLECTIONNAME)
-//	if err != nil {
-//		return nil, err
-//	}
-//	defer session.Close()
-//	if meta.Total == 0 {
-//		count, _ := collection.Find(query).Count()
-//		meta.Total = count
-//	}
-//	mquery := MgoQuerySkipLimit(collection.Find(query), meta.Offset, meta.Limit)
-//	err = mquery.Iter().All(&arrcontain)
-//	meta.Length = len(arrcontain)
-//	meta.SetRemaining()
-//	return &ResponsePage{Meta: meta, List: arrcontain}, err
-//}
+func GetPage(DBNAME string, COLLECTIONNAME string, meta Meta, query interface{}, gettypeinfo interface{}) (*ResponsePage, error) {
+	var arrcontain []interface{}
+	session, _, collection, err := GetCollection(nil, DBNAME, COLLECTIONNAME)
+	if err != nil {
+		return nil, err
+	}
+	defer session.Close()
+	if meta.Total == 0 {
+		count, _ := collection.Find(query).Count()
+		meta.Total = count
+	}
+	mquery := MgoQuerySkipLimit(collection.Find(query), meta.Offset, meta.Limit)
+	err = mquery.Iter().All(&arrcontain)
+	meta.Length = len(arrcontain)
+	meta.SetRemaining()
+	return &ResponsePage{Meta: meta, List: arrcontain}, err
+}
 func MgoIdToString(id bson.ObjectId) string {
 	return fmt.Sprintf("%x", string(id))
 }
@@ -138,25 +81,20 @@ func MgoQuerySkipLimit(query *mgo.Query, skip int, limit int) *mgo.Query {
 }
 
 func GetWebSession(r *http.Request) (*sessions.Session, error) {
-	//	_, _, collection, err := GetCollection(nil, "sessiondb", "session")
-	//	if err == nil {
 	var store = sessions.NewCookieStore([]byte("something-very-secret"))
-	//	store := mongostore.NewMongoStore(collection, 6000, true, []byte("secret-key-goyoo"))
 	websession, err := store.Get(r, "session-key")
 	fmt.Println("fun ", websession.Values)
 	return websession, err
-	//	}
-	//	return nil, err
 }
 
 func GetTodayDay2330() time.Time {
 	return GetBeforeDay2330(0)
 }
+
 func GetNowTs() int64 {
 	return time.Now().Unix()
 }
 
-//todo test
 func GetTimeShortString(t time.Time) string {
 	m := strconv.Itoa(int(t.Month()))
 	if len(m) == 1 {
@@ -195,74 +133,8 @@ func MacToApMac(mac string) string {
 
 //11分开始执行  设为10的时间
 //取10分相隔的时间
-//function getTenMiniute() {
-//    let now = new Date()
-//    now.setMinutes(now.getMinutes() - now.getMinutes() % 10)
-//    now.setSeconds(0)
-//    now.setMilliseconds(0)
-//    return now
-//}
 func GetTenMiniute() time.Time {
 	now := time.Now()
 	minute := now.Minute() - now.Minute()%10
 	return time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), minute, 0, 0, now.Location())
 }
-
-//type Pagination struct{
-//	}
-//pagination
-//module.exports.getFromReq = function (query, defaultLimit)
-//{
-//    var offset = parseInt(query.offset, 10);
-//    if (true === isNaN(offset) || 0 > offset) {
-//        offset = 0;
-//    }
-//
-//    var limit = parseInt(query.limit, 10);
-//    if (true === isNaN(limit) ||
-//        limit <= 0 ||
-//        limit > defaultLimit) {
-//        limit = defaultLimit;
-//    }
-//
-//    return {
-//        offset: offset,
-//        limit: limit
-//    };
-//};
-
-//
-//module.exports.getFromReq = function (query, defaultLimit)
-//{
-//    var offset = parseInt(query.offset, 10);
-//    if (true === isNaN(offset) || 0 > offset) {
-//        offset = 0;
-//    }
-//
-//    var limit = parseInt(query.limit, 10);
-//    if (true === isNaN(limit) ||
-//        limit <= 0 ||
-//        limit > defaultLimit) {
-//        limit = defaultLimit;
-//    }
-//
-//    return {
-//        offset: offset,
-//        limit: limit
-//    };
-//};
-
-//func (p Pagination) getMeta(totalLength int,currentLength int ){
-//
-////	module.exports.getMeta = function (totalLength, currentLength, pagination)
-////{
-////    return {
-////        offset: pagination.offset,
-////        limit: pagination.limit,
-////        total: totalLength,
-////        length: currentLength,
-////        remaining: currentLength === 0 ? 0 : totalLength - pagination.offset - currentLength
-////    };
-////};
-//
-//	}

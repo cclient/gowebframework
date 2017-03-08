@@ -5,7 +5,7 @@ import (
 )
 
 type Account struct {
-	// ID入库时很重要  有ID就必须设值才能入库，无ID 则由mongodb数据库自动生成id mgo不作任何设置
+	//ID入库时很重要  有ID就必须设值才能入库，无ID 则由mongodb数据库自动生成id mgo不作任何设置
 	//先在代码里生成id
 	Id       bson.ObjectId `json:"id" bson:"_id" schema:"id"`
 	Telphone string        `json:"telphone" bson:"telphone" schema:"telphone"`

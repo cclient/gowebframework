@@ -1,5 +1,5 @@
 
-var topname="ApApiItem";
+var topname="Data";
 var defaulttype="string";
 var bson=true; //对应 mongodb 
 var json=true; //http response 
@@ -29,15 +29,17 @@ var fun=(function(){
             goobjstring+=per +newkey+" "+getType(data[key],key);
             if (json||bson||scheme){
                 goobjstring+=' `';
+                var temparr=[]
                 if (json){
-                    goobjstring+='json:"'+key+'"';
+                    temparr.push('json:"'+key+'"');
                 }
                 if (bson){
-                    goobjstring+='bson:"'+key+'"';
+                    temparr.push('bson:"'+key+'"');
                 }
                 if (scheme){
-                    goobjstring+='scheme:"'+key+'"';
+                    temparr.push('scheme:"'+key+'"');
                 }
+                goobjstring+=temparr.join(" ");
                 goobjstring+='`';
             }
             goobjstring+="\n";

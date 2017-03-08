@@ -1,47 +1,74 @@
 package tool
 
 import (
-	"github.com/garyburd/redigo/redis"
+	"gopkg.in/redis.v4"
 	"time"
 )
 
-var conn redis.Conn
+var client *redis.Client
 
 func init() {
-
+	client = redis.NewClient(&redis.Options{
+		Addr:         ":6379",
+		DialTimeout:  10 * time.Second,
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 30 * time.Second,
+		PoolSize:     50,
+		PoolTimeout:  30 * time.Second,
+	})
+	//clearh all key
+	//client.FlushDb()
 }
 
-//func Test_Redis(t *testing.T) {
-//	conn, err := Dial()
-//	reply, err := conn.Do("hset", "warnmatch", "new key", 1)
-//	fmt.Println(reply)
-//	fmt.Println(err)
-//	//	if err != nil {
-//	//		conn.Close()
-//	//		return nil, err
-//	//	}
-//	//	return conn, err
-//}
-
-//func Insert()
-
-//
-func Do(commandName string, args ...interface{}) {
-	conn, err := Dial()
-	if err != nil {
-		conn.Do("hset", args)
-		conn.Close()
-	}
+func getNewClient() *redis.Client {
+	client = redis.NewClient(&redis.Options{
+		Addr:         ":6379",
+		DialTimeout:  10 * time.Second,
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 30 * time.Second,
+		PoolSize:     50,
+		PoolTimeout:  30 * time.Second,
+	})
+	return client
 }
-func Dial() (redis.Conn, error) {
-	c, err := redis.DialTimeout("tcp", ":6379", 0, 1*time.Second, 1*time.Second)
-	if err != nil {
-		return nil, err
+
+func isConnection() bool {
+	reply := client.Ping().String()
+	if reply == "ping: PONG" {
+		return true
 	}
-	_, err = c.Do("SELECT", "4")
-	if err != nil {
-		c.Close()
-		return nil, err
+	//"ping: dial tcp :6379: getsockopt: connection refused"
+	//dial
+	return false
+}
+
+func GetClient() *redis.Client {
+	if !isConnection() {
+		client = getNewClient()
 	}
-	return c, nil
+	return client
+}
+
+func LRange(client *redis.Client, key string, start int64, end int64) ([]string, error) {
+	return client.LRange(key, start, end).Result()
+}
+
+func LTrim(client *redis.Client, key string, start int64, end int64) (string, error) {
+	return client.LTrim(key, start, end).Result()
+}
+
+func LPushArr(client *redis.Client, key string, args []interface{}) (int64, error) {
+	return client.LPush(key, args...).Result()
+}
+
+func RPushArr(client *redis.Client, key string, args []interface{}) (int64, error) {
+	return client.RPush(key, args...).Result()
+}
+
+func LPush(client *redis.Client, key string, item interface{}) (int64, error) {
+	return client.LPush(key, item).Result()
+}
+
+func RPush(client *redis.Client, key string, item interface{}) (int64, error) {
+	return client.RPush(key, item).Result()
 }
