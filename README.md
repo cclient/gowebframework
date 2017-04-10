@@ -17,9 +17,13 @@ beego太重,个人喜欢轻量的东西,也因后台主要为nosql,beego的orm�
 #支持全局过滤器(有这个很多东西都很好实现了,类似流量统计)
 
 #作了部分扩展和修改
+
  ##静态页支持，目前只支持静态文件，需要更详细的支持，可以用go自带的模板。
+
  ##mongo交互
+
  ##接口分页
+
  ##session 注释掉了，提醒，struct/point需要序列化再保存到session中。
 
 dao、manager、error、controller、route基础功能,都可用codesmith模板生成,tool下为模板文件
@@ -28,6 +32,8 @@ tool/code.js 用来解析json数据格式为go的struct,数据用json交互,存�
 
 执行方式(依赖nodejs) node tool/code.js即可
 例
+
+```js
 var jdata={
     "_id" : "564d5162e54b3106fb7badea",
     "macs" : [
@@ -39,9 +45,11 @@ var jdata={
         "name":"shop1"
     }
 };
+```
 
 生成结果
 
+```go
 type Data struct {
 	_id string `json:"_id" bson:"_id"`
 	Macs []string `json:"macs" bson:"macs"`
@@ -49,9 +57,11 @@ type Data struct {
 	Timestr string `json:"timestr" bson:"timestr"`
 	Shop Shop `json:"shop" bson:"shop"`
 }
+
 type Shop struct {
 	Name string `json:"name" bson:"name"`
 }
+```
 
 根类型,需要手动更改名称,子类型,自动命名。
 
@@ -62,14 +72,24 @@ tool/mongocollection_go_opera_make.cst 根据"mongodb 表名"生成基础的curl
 tool/autobuild.js 用nodej和glub-watcher写的监听go 项目自动编译,编译较耗时，改一小个部分，就编译的话，多数是编译失败,而且很消耗性能，还没想到完美的优化办法,暂时用个定时器 监听2秒，停止1秒，如此循环，会减少些 “无效”的编译。
 
 -d 网站根目录对应本地目录路径
+
 -h host
--p port
+
+-p port 默认端口9900
+
 -f pid路径
+
 -mgop mongodb端口
 
-项目启动 默认端口9900
+##启动 需要go环境,配置gopath,goroot
 
 sudo go run ~/src/main/apiserver
+
+##docker 启动
+
+docker build -t goweb .
+
+docker run -d  -p 9900:9900  goweb
 
 启动成功后
 
