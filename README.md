@@ -1,6 +1,6 @@
 # gowebframework
 
-# go语言轻量的web框架,主要部分提取自docker项目
+# go语言轻量的web框架
 
 # 之前替代nodejs搭建高并发api server,数据格式为json
 
