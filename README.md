@@ -14,17 +14,17 @@ beego太重,个人喜欢轻量的东西,也因后台主要为nosql,beego的orm�
 
 前端angularjs,现已移除
 
-#支持全局过滤器(有这个很多东西都很好实现了,类似流量统计)
+# 支持全局过滤器(有这个很多东西都很好实现了,类似流量统计)
 
-#作了部分扩展和修改
+# 作了部分扩展和修改
 
- ##静态页支持，目前只支持静态文件，需要更详细的支持，可以用go自带的模板。
+ ## 静态页支持，目前只支持静态文件，需要更详细的支持，可以用go自带的模板。
 
- ##mongo交互
+ ## mongo交互
 
- ##接口分页
+ ## 接口分页
 
- ##session 注释掉了，提醒，struct/point需要序列化再保存到session中。
+ ## session 注释掉了，提醒，struct/point需要序列化再保存到session中。
 
 dao、manager、error、controller、route基础功能,都可用codesmith模板生成,tool下为模板文件
 
@@ -81,11 +81,11 @@ tool/autobuild.js 用nodej和glub-watcher写的监听go 项目自动编译,编�
 
 -mgop mongodb端口
 
-##启动 需要go环境,配置gopath,goroot
+## 启动 需要go环境,配置gopath,goroot
 
 sudo go run ~/src/main/apiserver
 
-##docker 启动
+## docker 启动
 
 docker build -t goweb .
 
